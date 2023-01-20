@@ -3,6 +3,7 @@ package com.work.microservice.demo.controller;
 
 import com.work.microservice.demo.model.User;
 import com.work.microservice.demo.service.UserService;
+import org.hibernate.tuple.entity.EntityMetamodel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -42,6 +43,8 @@ public class UserController {
         User _user = userService.save(user);
         return ResponseEntity.badRequest().body(_user);
 //        return ResponseEntity.created(null).build();
+
+
     }
 
 
