@@ -1,12 +1,12 @@
 package com.work.microservice.demo.dao;
 
 import com.work.microservice.demo.model.User;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 
 @Component
 public class UserDao {
@@ -15,8 +15,8 @@ public class UserDao {
     private static int seq = 0;
 
     static {
-        users.add(new User(++seq, "alex", "de souza"));
-        users.add(new User(++seq, "ronnie", "coleman"));
+        users.add(new User(++seq, "alex", LocalDate.now().minusYears(20)));
+        users.add(new User(++seq, "ronnie", LocalDate.now().minusYears(30)));
     }
 
 
@@ -30,4 +30,14 @@ public class UserDao {
         return user;
     }
 
+    public User getFindOne(int id) {
+        Predicate<? super User> predicate = _user -> _user.getId() == id;
+        User _user = users.stream().filter(predicate).findFirst().orElse(null);
+        return _user;
+    }
+
+    public void deleteById(int id) {
+        Predicate<? super User> predicate = _user -> _user.getId() == id;
+        users.removeIf(predicate);
+    }
 }

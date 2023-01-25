@@ -1,20 +1,17 @@
 package com.work.microservice.demo.controller;
 
 
+import com.work.microservice.demo.exception.UserNotFoundException;
 import com.work.microservice.demo.model.User;
 import com.work.microservice.demo.service.UserService;
-import org.hibernate.tuple.entity.EntityMetamodel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.function.Predicate;
 
 @Controller
-@Validated
 @RequestMapping("/")
 public class UserController {
 
@@ -27,29 +24,30 @@ public class UserController {
         return userService.getUsers();
     }
 
-        @GetMapping(path = "/users/{id}")
-        @ResponseBody
-        public User getUser(@PathVariable("id") int id) {
-            List<User> users = userService.getUsers();
-
-            Predicate<? super User> predicate = item -> (item.getId() == id);
-        return  users.stream().filter(predicate).findFirst().orElse(null);
+    @GetMapping(path = "/users/{id}")
+    @ResponseBody
+    public User getUser(@PathVariable("id") int id) throws UserNotFoundException {
+        User _user = userService.findOne(id);
+//        throw new NullPointerException("sada");
+        if(_user == null)
+            throw new UserNotFoundException("User Id : " + id);
+        return _user;
     }
 
 
     @PostMapping(path = "/users")
-//    @ResponseBody
+    @ResponseBody
     public ResponseEntity<User> createUser(@RequestBody User user) {
         User _user = userService.save(user);
-        return ResponseEntity.badRequest().body(_user);
-//        return ResponseEntity.created(null).build();
-
-
-
-        //comment
-
-
+        return ResponseEntity.created(null).body(_user);
     }
 
+
+
+    @DeleteMapping(path = "/users/{id}")
+    @ResponseBody
+    public void deleteUser(@PathVariable("id") int id) throws UserNotFoundException {
+        userService.deleteById(id);
+    }
 
 }
