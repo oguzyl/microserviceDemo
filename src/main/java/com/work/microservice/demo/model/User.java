@@ -1,12 +1,18 @@
 package com.work.microservice.demo.model;
 
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.time.LocalDate;
 
+//@Entity
 public class User {
     private Integer id;
 
+    @JsonProperty("user_name")
     private String name;
+
+    @JsonProperty("birth_date")
     private LocalDate birthDate;
 
     public User(Integer id, String name, LocalDate birthDate) {
