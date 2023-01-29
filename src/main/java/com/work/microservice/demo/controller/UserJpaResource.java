@@ -1,10 +1,8 @@
 package com.work.microservice.demo.controller;
 
-
 import com.work.microservice.demo.exception.UserNotFoundException;
+import com.work.microservice.demo.jpa.UserRepository;
 import com.work.microservice.demo.model.User;
-import com.work.microservice.demo.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
@@ -12,48 +10,51 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/")
-public class UserController {
+public class UserJpaResource {
 
-    @Autowired
-    private UserService userService;
+    private UserRepository userRepository;
 
-    @GetMapping(path = "/users")
-    @ResponseBody
-    public List<User> retrieveAllUsers() {
-        return userService.getUsers();
+    public UserJpaResource(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
-    @GetMapping(path = "/users/{id}")
+    @GetMapping(path = "/jpa/users")
+    @ResponseBody
+    public List<User> retrieveAllUsers() {
+
+        return userRepository.findAll();
+
+    }
+
+    @GetMapping(path = "/jpa/users/{id}")
     @ResponseBody
     public EntityModel<User> retrieveUser(@PathVariable("id") int id) throws UserNotFoundException {
-        User _user = userService.findOne(id);
-        if(_user == null)
+        Optional<User> _user = userRepository.findById(id);
+        if(_user.isEmpty())
             throw new UserNotFoundException("User Id : " + id);
 
-        EntityModel<User> entityModel = EntityModel.of(_user);
+        EntityModel<User> entityModel = EntityModel.of(_user.get());
         WebMvcLinkBuilder link = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).retrieveAllUsers());
-        entityModel.add(link.withRel("all-userss"));
+        entityModel.add(link.withRel("all-users"));
 
         return entityModel;
     }
 
-
-    @PostMapping(path = "/users")
+    @PostMapping(path = "/jpa/users")
     @ResponseBody
     public ResponseEntity<User> createUser(@RequestBody User user) {
-        User _user = userService.save(user);
+        User _user = userRepository.save(user);
         return ResponseEntity.created(null).body(_user);
     }
 
-
-
-    @DeleteMapping(path = "/users/{id}")
+    @DeleteMapping(path = "/jpa/users/{id}")
     @ResponseBody
     public void deleteUser(@PathVariable("id") int id) throws UserNotFoundException {
-        userService.deleteById(id);
+        userRepository.deleteById(id);
     }
 
 }

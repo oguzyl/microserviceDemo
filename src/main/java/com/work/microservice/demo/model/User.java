@@ -1,18 +1,25 @@
 package com.work.microservice.demo.model;
 
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import lombok.Data;
 
 import java.time.LocalDate;
 
-//@Entity
+@Data
+@Entity(name = "user_details")
 public class User {
+
+    @Id
+    @GeneratedValue
     private Integer id;
 
-    @JsonProperty("user_name")
+//    @JsonProperty("user_name")
     private String name;
 
-    @JsonProperty("birth_date")
+//    @JsonProperty("birth_dates")
     private LocalDate birthDate;
 
     public User(Integer id, String name, LocalDate birthDate) {
@@ -22,27 +29,7 @@ public class User {
         this.birthDate = birthDate;
     }
 
-    public Integer getId() {
-        return id;
-    }
+    public User() {
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public LocalDate getBirthDate() {
-        return birthDate;
-    }
-
-    public void setBirthDate(LocalDate birthDate) {
-        this.birthDate = birthDate;
     }
 }
