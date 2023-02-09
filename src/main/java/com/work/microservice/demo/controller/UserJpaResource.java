@@ -2,6 +2,7 @@ package com.work.microservice.demo.controller;
 
 import com.work.microservice.demo.exception.UserNotFoundException;
 import com.work.microservice.demo.jpa.UserRepository;
+import com.work.microservice.demo.model.Post;
 import com.work.microservice.demo.model.User;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
@@ -55,6 +56,15 @@ public class UserJpaResource {
     @ResponseBody
     public void deleteUser(@PathVariable("id") int id) throws UserNotFoundException {
         userRepository.deleteById(id);
+    }
+
+    @GetMapping(path = "/jpa/users/{id}/posts")
+    @ResponseBody
+    public List<Post> retrievePostsForUser(@PathVariable("id") int id) throws UserNotFoundException {
+        Optional<User> user = userRepository.findById(id);
+        if (user.isEmpty())
+            throw new UserNotFoundException("id:"+id);
+        return user.get().getPosts();
     }
 
 }
